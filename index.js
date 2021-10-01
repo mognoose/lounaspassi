@@ -64,7 +64,6 @@ db.run(createRestaurantsTable, err => {
 
 app.get('/', (req, res) => {
   res.send('Hello World!')
-  let result = command("echo 'Hello World!'")
 })
 
 app.get("/stamps", (req, res) => {

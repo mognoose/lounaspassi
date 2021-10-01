@@ -1,17 +1,22 @@
 <template>
   <div class="container">
+    <div class="bg-overlay" />
     <h1>{{restaurant.name}}</h1>
-    <div class="d-flex flex-wrap border justify-content-center">
+    <div class="d-flex flex-wrap justify-content-center stamp-grid">
         <div
-          class="border stamp-place d-flex align-items-center justify-content-center text-primary"
+          class="stamp-place d-flex align-items-center justify-content-center text-primary"
           v-for="n, i in 10"
           :key="i"
           v-html="stamps && stamps[i] ? icons.stamp : ''"
           />
     </div>
+    
+    <hr>
+    <canvas id="canvas"></canvas>
     <hr>
     <button class="btn btn-secondary me-1" @click="addStamp()">add stamp</button>
     <button class="btn btn-secondary me-1" @click="clearStamps()">clear</button>
+
     <div class="corner-btn" v-html="icons.dots" @click="toggleMenu()" />
     <div class="full-menu pt-4" v-if="menuOpen">
       <div class="corner-btn" v-html="icons.x" @click="toggleMenu()" />
@@ -20,17 +25,20 @@
           <a class="nav-link" :href="'?restaurant='+r.id">{{r.name}}</a>
         </li>
       </ul>
-      <!-- <pre>{{restaurants}}</pre> -->
     </div>
+      <!-- <pre>{{stamps}}</pre> -->
   </div>
 </template>
 
 <script>
 import axios from 'axios'
+import QRCode from 'qrcode'
+import {mapGetters, mapActions} from 'vuex'
 
 export default {
   name: 'App',
 computed: {
+  ...mapGetters({count: 'count', stamps: 'stamps'}),
   restaurantId(){
     let uri = window.location.href.split('?')[1]
     let data = uri.split("=")
@@ -42,12 +50,12 @@ computed: {
 },
   data() {
     return {
-      server: 'http://localhost:3000',
+      server: 'http://192.168.1.134:3000',
       user: {
         id: 666,
         name: "stna"
       },
-      stamps: {},
+      // stamps: {},
       restaurants: {},
       restaurant: {},
       menuOpen: false,
@@ -62,11 +70,12 @@ computed: {
     this.getStamps()
     this.getRestaurants()
     this.getRestaurant()
+    this.generateQR()
   },
   methods: {
+    ...mapActions(['addToCount', 'fetchStamps']),
     async getStamps(){
-      const res = await axios.get(this.server+'/stamps?restaurant='+this.restaurantId+'&user='+this.user.id)
-      this.stamps = res.data
+      this.fetchStamps({server: this.server, restaurant: this.restaurantId, user: this.user})
     },
     async getRestaurants(){
       const res = await axios.get(this.server+'/restaurants',)
@@ -90,13 +99,33 @@ computed: {
     },
     toggleMenu(){
       this.menuOpen = !this.menuOpen
-      console.log(this.menuOpen);
+    },
+    generateQR(){
+      const canvas = document.getElementById('canvas')
+      const url = this.server+'/stamp?restaurant='+this.restaurantId+'&user='+this.user.id
+
+      QRCode.toCanvas(canvas, url, error => {
+        if (error) console.error(error)
+        console.log('QR code generated successfully');
+      })
     },
   },
 }
 </script>
 
 <style>
+body{
+  background-image: url('./assets/img/wooden.jpg');
+}
+.bg-overlay{
+  position: absolute;
+  z-index: -1;
+  top: 0px;
+  left: 0px;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(0deg, rgba(255,255,255,0) 60%, rgba(255,255,255,.7) 100%);
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -105,7 +134,12 @@ computed: {
   color: #2c3e50;
   margin-top: 60px;
 }
+.stamp-grid{
+  background-color: hsla(0, 0%, 100%, .6);
+  border: 1px solid hsla(0, 0%, 40%, 0.9);
+}
 .stamp-place{
+  border: 1px solid hsla(0, 0%, 40%, 0.9);
   width: 20%;
   height: 6em;
 }
