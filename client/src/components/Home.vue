@@ -39,24 +39,10 @@
             </div>
 
       </div>
-      
       <hr>
       <canvas id="canvas"></canvas>
-      <hr>
-      <button class="btn btn-secondary me-1" @click="addStamp()">add stamp</button>
-      <button class="btn btn-secondary me-1" @click="clearStamps()">clear</button>
-
       <div class="corner-btn" @click="goHome()"><BootstrapIcon size="3x" icon="x" /></div>
-      <div class="full-menu pt-4" v-if="menuOpen">
-        <div class="corner-btn" v-html="icons.x" @click="toggleMenu()" />
-        <ul class="nav flex-column mt-4">
-          <li class="nav-item" v-for="r in restaurants" :key="r.id">
-            <a class="nav-link" href.prevent="'?restaurant='+r.id" @click="onSelectRestaurant(r.id)">{{r.name}}</a>
-          </li>
-        </ul>
-      </div>
     </section>
-      <!-- <pre>{{stamps}}</pre> -->
   </div>
 </template>
 
@@ -149,19 +135,6 @@ export default {
         })
       }
     },
-    async addStamp(){
-      let data = "restaurant="+this.restaurantId+"&user="+this.user.id
-      const res = await axios.get(this.server+'/stamp?'+data)
-      console.log(res.data)
-      await this.fetchStamps({server: this.server, restaurant: this.restaurantId, user: this.user})
-    },
-    async clearStamps(){
-      let data = "restaurant="+this.restaurantId+"&user="+this.user.id
-      const res = await axios.post(this.server+'/clear', data)
-      console.log(res.data)
-      await this.fetchStamps({server: this.server, restaurant: this.restaurantId, user: this.user})
-    },
-
   },
 }
 </script>
