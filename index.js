@@ -5,7 +5,7 @@ const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors')
 const path = require("path");
 const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const { Sequelize } = require('sequelize');
 const app = express()
 const port = 3000
 
@@ -16,7 +16,20 @@ var corsOptions = {
 app.use(cors(corsOptions))
 app.use(bodyParser.urlencoded({ extended: true }));
 
+const sequelize = new Sequelize({
+  dialect: 'sqlite',
+  storage: 'db/lp.db'
+});
+async function dbinit(){
 
+  try {
+    await sequelize.authenticate();
+    console.log('Connection has been established successfully.');
+  } catch (error) {
+    console.error('Unable to connect to the database:', error);
+  }
+}
+dbinit()
 const db_name = path.join(__dirname, "db", "lp.db");
 const db = new sqlite3.Database(db_name, err => {
   if (err) {
@@ -73,10 +86,7 @@ app.post('/clear/', (req, res) => {
 })
 
 app.post('/register', async (req, res) => {
-  console.log(req.body);
   const pass = await bcrypt.hash(req.body.password, 10)
-  console.log(pass);
-
   let query = "INSERT INTO users (name, password, email) VALUES('"+req.body.name+"', '"+pass+"', '"+req.body.email+"');"
   db.run(query, err => {
     if (err) {
@@ -87,6 +97,19 @@ app.post('/register', async (req, res) => {
   });
 
   res.send('created')
+})
+
+app.post('/login', async (req, res) => {
+  console.log("LOGIN:",req.body);
+
+  const sql = "SELECT * FROM users WHERE name = '"+req.body.name+"';"
+  const user = await db.get(sql, [], user => {
+    res.send()
+  });
+  // const match = await bcrypt.compare(req.body.password, user.password)
+
+  console.log(user);
+  // console.log(match);
 })
 
 app.get('/users', (req, res) => {
