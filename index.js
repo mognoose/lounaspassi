@@ -51,7 +51,6 @@ app.get("/restaurants", (req, res) => {
 });
 
 app.get("/restaurant", (req, res) => {
-  console.log(req.query.restaurant);
   const sql = "SELECT * FROM restaurants WHERE id = '"+req.query.restaurant+"';"
   db.get(sql, [], (err, rows) => {
     if (err) {
@@ -65,9 +64,15 @@ app.get('/stamp/', (req, res) => {
   addStamp(req.query.restaurant, req.query.user)
   res.send('Stamp added '+req.query.user)
 })
+
 app.post('/clear/', (req, res) => {
-    clearStamps(req.body.restaurant, req.body.user)
-    res.send('cleared '+req.body.user)
+  clearStamps(req.body.restaurant, req.body.user)
+  res.send('cleared '+req.body.user)
+})
+
+app.post('/register', (req, res) => {
+  console.log(req.body);
+  res.send('created')
 })
 
 const addStamp = function(restaurant, user){
@@ -124,7 +129,7 @@ const io = require("socket.io")(server, {
 });
 
 io.on('connection', socket => {
-  console.log(socket.id)
+  console.log("SOCKET:", socket.id)
   io.emit('PING', {test: 'test'})
 
   socket.on('STAMPED', async data => {

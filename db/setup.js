@@ -36,7 +36,21 @@ const createStampsTable = `CREATE TABLE IF NOT EXISTS stamps (
     console.log("Successful creation of the 'restaurants' table");
   });
   
+  const createUsersTable = `CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name VARCHAR(100),
+    email VARCHAR(100),
+    password VARCHAR(100) NOT NULL,
+    token VARCHAR(100) NOT NULL
+    );`
   
+  db.run(createRestaurantsTable, err => {
+    if (err) return console.error(err.message);
+    console.log("Successful creation of the 'users' table");
+  });
+  
+  return
+    
   console.log('start seeding');
   restaurants = [
     {name: 'Kotipata Karvia', token: '0346298572099'},
