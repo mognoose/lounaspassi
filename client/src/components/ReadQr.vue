@@ -22,6 +22,7 @@
 import axios from 'axios'
 import BootstrapIcon from '@dvuckovic/vue3-bootstrap-icons'
 import {mapGetters, mapActions} from 'vuex'
+import io from 'socket.io-client'
 
 export default {
   name: 'App',
@@ -37,6 +38,7 @@ export default {
   data() {
     return {
       server: 'http://192.168.1.135:3000',
+      socket: io('http://192.168.1.135:3000'),
       user: {
         id: 666,
         name: "stna"
@@ -55,6 +57,9 @@ export default {
   },
   mounted() {
     this.getData()
+    this.socket.on('PING',() => {
+      console.log("GOT PINGED");
+    })
   },
   methods: {
     ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants']),
@@ -72,12 +77,14 @@ export default {
       const res = await axios.get(this.server+'/stamp?'+data)
       console.log(res.data)
       this.getData()
+      this.socket.emit('STAMPED')
     },
     async clearStamps(){
       let data = "restaurant="+this.restaurantId+"&user="+this.user.id
       const res = await axios.post(this.server+'/clear', data)
       console.log(res.data)
       this.getData()
+      this.socket.emit('STAMPED')
     },
 
   },

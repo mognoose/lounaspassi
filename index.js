@@ -25,6 +25,7 @@ const db = new sqlite3.Database(db_name, err => {
 
 // require('./db/setup.js')
 
+
 app.get('/', (req, res) => {
   res.send('Hello World!')
 })
@@ -103,6 +104,31 @@ const sql = function(sql){
   });
 }
 
-app.listen(port, () => {
+const server = app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
+})
+
+const io = require("socket.io")(server, {
+  cors:{
+    origins: ["*"],
+    handlePreflightRequest: (req, res) => {
+      res.writeHead(200, {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Methods": "GET,POST",
+        "Access-Control-Allow-Headers": "my-custom-header",
+        "Access-Control-Allow-Credentials": true
+      });
+      res.end();
+    }
+  }
+});
+
+io.on('connection', socket => {
+  console.log(socket.id)
+  io.emit('PING', {test: 'test'})
+
+  socket.on('STAMPED', async data => {
+    io.emit('PING', data)
+  })
+
 })
