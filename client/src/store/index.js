@@ -1,6 +1,6 @@
 import { createStore } from "vuex" 
 import axios from "axios" 
-const server = 'http://192.168.1.135:3000'
+const server = 'http://192.168.1.134:3000'
 
 const state = {
    stamps: {},

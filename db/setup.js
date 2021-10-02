@@ -35,16 +35,19 @@ const createStampsTable = `CREATE TABLE IF NOT EXISTS stamps (
     if (err) return console.error(err.message);
     console.log("Successful creation of the 'restaurants' table");
   });
-  
+  db.run(`DROP TABLE users`, err => {
+    if (err) return console.error(err.message);
+    console.log("Successful dropped 'users' table");
+  });
   const createUsersTable = `CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name VARCHAR(100),
     email VARCHAR(100),
     password VARCHAR(100) NOT NULL,
-    token VARCHAR(100) NOT NULL
+    token VARCHAR(100)
     );`
   
-  db.run(createRestaurantsTable, err => {
+  db.run(createUsersTable, err => {
     if (err) return console.error(err.message);
     console.log("Successful creation of the 'users' table");
   });

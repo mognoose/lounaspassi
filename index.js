@@ -4,6 +4,8 @@ const bodyParser = require("body-parser")
 const sqlite3 = require('sqlite3').verbose();
 const cors = require('cors')
 const path = require("path");
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 const app = express()
 const port = 3000
 
@@ -70,9 +72,32 @@ app.post('/clear/', (req, res) => {
   res.send('cleared '+req.body.user)
 })
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   console.log(req.body);
+  const pass = await bcrypt.hash(req.body.password, 10)
+  console.log(pass);
+
+  let query = "INSERT INTO users (name, password, email) VALUES('"+req.body.name+"', '"+pass+"', '"+req.body.email+"');"
+  db.run(query, err => {
+    if (err) {
+      console.error(err.message);
+      return err.message
+    }
+    console.log("Success");
+  });
+
   res.send('created')
+})
+
+app.get('/users', (req, res) => {
+  const sql = "SELECT * FROM users ORDER BY id;"
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      return console.error(err.message);
+    }
+    res.send(rows);
+  });
+  console.log();
 })
 
 const addStamp = function(restaurant, user){

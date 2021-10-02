@@ -1,6 +1,8 @@
 <template>
   <div class="container">
     <div class="bg-overlay" />
+    <section v-if="!registered">
+
     <h1>Register</h1>
       <input type="text" placeholder="username" class="form-control mb-2" v-model="user.name">
       <input type="text" placeholder="password" class="form-control mb-2" v-model="user.password">
@@ -9,7 +11,14 @@
       <button class="btn btn-primary" @click="register()">
         Register <BootstrapIcon icon="pencil-square" />
       </button>
-      <hr>
+    </section>
+    <section v-else>
+      <h1>Registered successfully</h1>
+      <button class="btn btn-primary" @click="goHome()">
+        Continue <BootstrapIcon icon="check" />
+      </button>
+
+    </section>
 
 
       <div class="corner-btn" @click="goHome()"><BootstrapIcon size="3x" icon="x" /></div>
@@ -27,8 +36,9 @@ export default {
   },
   data() {
     return {
-      server: 'http://192.168.1.135:3000',
+      server: 'http://192.168.1.134:3000',
       user: {},
+      registered: false
     }
   },
   methods: {
@@ -37,6 +47,7 @@ export default {
       let data = "name="+this.user.name+"&password="+this.user.password+"&email="+this.user.email+"&"
       const res = await axios.post(this.server+'/register', data)
       console.log(res.data)
+      if(res.data === "created") this.registered = true
     },
     goHome(){
       this.$router.push('/')
