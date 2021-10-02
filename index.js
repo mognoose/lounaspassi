@@ -40,7 +40,7 @@ app.get("/stamps", (req, res) => {
 });
 
 app.get("/restaurants", (req, res) => {
-  const sql = "SELECT * FROM restaurants ORDER BY id;"
+  const sql = "SELECT * FROM restaurants WHERE name like '%"+req.query.q+"%' ORDER BY id;"
   db.all(sql, [], (err, rows) => {
     if (err) {
       return console.error(err.message);
