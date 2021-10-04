@@ -1,8 +1,5 @@
 ## Setup
-### create databases and seed
-```
-node db/setup.js
-```
+
 ### Start developementserver
 ```
 npm i -g nodemon
@@ -12,4 +9,8 @@ nodemon index.js
 ```
 cd client
 npm run serve
+```
+### reset database
+```
+node app/config/resetDb.js
 ```
