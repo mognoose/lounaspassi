@@ -65,23 +65,24 @@ export default {
     ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants']),
     
     async getData(){
-      let user = {id: await this.$route.params.user}
-      await this.fetchStamps({server: this.server, restaurant: this.restaurantId, user})
+      let userId = await this.$route.params.user
+      await this.fetchStamps({restaurantId: this.restaurantId, userId})
     },
     goHome(){
       this.$router.push('/')
     },
 
     async addStamp(){
-      let data = "restaurant="+this.restaurantId+"&user="+this.userId
-      const res = await axios.get(this.server+'/stamp?'+data)
+      let data = {"restaurantId": this.restaurantId, "userId":this.userId}
+      const res = await axios.post(this.server+'/api/stamps/', data)
       console.log(res.data)
       this.getData()
       this.socket.emit('STAMPED')
     },
     async clearStamps(){
-      let data = "restaurant="+this.restaurantId+"&user="+this.user.id
-      const res = await axios.post(this.server+'/clear', data)
+      // let data = "restaurantId="+this.restaurantId+"&userId="+this.userId
+      let data = {"restaurantId": this.restaurantId, "userId":this.userId}
+      const res = await axios.delete(this.server+'/api/stamps/clear', { data })
       console.log(res.data)
       this.getData()
       this.socket.emit('STAMPED')

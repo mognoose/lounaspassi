@@ -66,10 +66,10 @@ export default {
   },
   data() {
     return {
-      server: 'http://192.168.1.134:3000',
-      socket: io('http://192.168.1.134:3000'),
+      server: 'http://192.168.1.135:3000',
+      socket: io('http://192.168.1.135:3000'),
       user: {
-        id: 666,
+        id: 1,
         name: "stna"
       },
       searchString: "",
@@ -99,7 +99,7 @@ export default {
       if(this.restaurantId){
         this.generateQR()
         await this.getRestaurant()
-        await this.fetchStamps({server: this.server, restaurant: this.restaurantId, user: this.user})
+        await this.fetchStamps({restaurantId: this.restaurantId, userId: this.user.id})
       }
     },
     async getRestaurants(){
@@ -108,7 +108,7 @@ export default {
     },
     async getRestaurant(){
       if(this.restaurantId){
-        const res = await axios.get(this.server+'/restaurant/?restaurant='+this.restaurantId,)
+        const res = await axios.get(this.server+'/api/restaurants/'+this.restaurantId,)
         this.restaurant = res.data
       }
     },
