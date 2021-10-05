@@ -4,12 +4,14 @@ const server = process.env.VUE_APP_API
 
 const state = {
    stamps: {},
-   restaurants: {}
+   restaurants: {},
+   user: {}
 }
 
 const getters = {
    stamps: state => state.stamps,
-   restaurants: state => state.restaurants
+   restaurants: state => state.restaurants,
+   user: state => state.user
 }
 
 const actions = {
@@ -25,6 +27,16 @@ const actions = {
    async register({}, data){
       const res = await axios.post(server+'/api/users', data)
       return res.data
+   },
+   async login({commit}, data){
+      const res = await axios.get(server+'/api/users/login', { params: data })
+      console.log("VUEX",res.data);
+      commit('setUser', res.data)
+      return res
+   },
+   async logout({commit}){
+      commit('logout')
+      return "logged out"
    }
 }
 
@@ -34,6 +46,12 @@ const mutations = {
    },
    setRestaurants(state, restaurants){
       state.restaurants = restaurants
+   },
+   setUser(state, data){
+      state.user = data
+   },
+   logout(state){
+      state.user = {}
    }
 }
 

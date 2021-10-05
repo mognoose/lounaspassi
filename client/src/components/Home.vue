@@ -25,6 +25,7 @@
             </div>
           </li>
         </ul>
+      <div class="corner-btn" @click="onLogout()"><BootstrapIcon size="3x" icon="x" /></div>
 
     </section>
     <section v-else>
@@ -59,7 +60,7 @@ export default {
     BootstrapIcon,
   },
   computed: {
-    ...mapGetters(['restaurants', 'stamps']),
+    ...mapGetters(['restaurants', 'stamps', 'user']),
     restaurantId(){
       return this.$route.params.restaurantId
     }
@@ -68,10 +69,6 @@ export default {
     return {
       server: process.env.VUE_APP_API,
       socket: io(process.env.VUE_APP_API),
-      user: {
-        id: 1,
-        name: "stna"
-      },
       searchString: "",
       restaurant: {},
       menuOpen: false,
@@ -79,6 +76,8 @@ export default {
     }
   },
   mounted() {
+    if(!this.user.name) this.$router.replace('/login')
+
     this.getData()
     this.socket.on('PING',() => {
       console.log("GOT PINGED");
@@ -86,7 +85,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants']),
+    ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants', 'logout']),
 
     onAddFavourites(r){
       this.favourites.push(r);
@@ -97,9 +96,11 @@ export default {
     
     async getData(){
       if(this.restaurantId){
+        console.log("USER",this.user);
         this.generateQR()
         await this.getRestaurant()
         await this.fetchStamps({restaurantId: this.restaurantId, userId: this.user.id})
+
       }
     },
     async getRestaurants(){
@@ -118,6 +119,10 @@ export default {
     },
     goHome(){
       this.$router.push('/')
+    },
+    onLogout(){
+      this.logout()
+      this.$router.push('/login')
     },
     generateQR(){
       const canvas = document.getElementById('canvas')

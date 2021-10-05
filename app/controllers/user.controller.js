@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.users;
 const Op = db.Sequelize.Op;
+const bcrypt = require('bcrypt');
 
 // Create and Save a new User
 exports.create = (req, res) => {
@@ -31,6 +32,40 @@ exports.create = (req, res) => {
         });
       });
   };
+
+
+// Find a single User with an id
+exports.login = (req, res) => {
+  const name = req.query.name;
+  const password = req.query.password;
+  console.log("name:", name);
+  console.log("pass:", password);
+
+  User.findOne({ where: { name: name } })
+    .then(user => {
+      if(user){
+        const pass = bcrypt.compareSync(password, user.password);
+        if (pass) {
+          user.password = null
+          res.send(user);
+        } else{
+          res.status(403).send({
+            message: `incorrect password for name=${name}.`
+          });
+        }
+      }
+      else {
+        res.status(404).send({
+          message: `Cannot find User with name=${name}.`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving User with name=" + name + ". ERROR: "+err
+      });
+    });
+};
 
 // Retrieve all Users from the database.
 exports.findAll = (req, res) => {

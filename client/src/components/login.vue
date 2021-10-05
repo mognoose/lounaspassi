@@ -1,32 +1,32 @@
 <template>
   <div class="container">
     <div class="bg-overlay" />
-    <section v-if="!registered">
+    <section v-if="!loggedIn">
 
-    <h1>Register</h1>
+    <h1>Login</h1>
       <input type="text" placeholder="username" class="form-control mb-2" v-model="user.name">
       <input type="password" placeholder="password" class="form-control mb-2" v-model="user.password">
-      <input type="email" placeholder="email (optional)" class="form-control mb-2" v-model="user.email">
-
-      <button class="btn btn-primary" @click="onRegister()">
-        Register <BootstrapIcon icon="pencil-square" />
-      </button>
+      <button class="btn btn-primary" @click="onLogin()">
+        Login <BootstrapIcon icon="pencil-square" />
+      </button><hr>
+      <router-link to="/register"><button class="shadow btn btn-secondary btn-sm">Register</button></router-link>
     </section>
     <section v-else>
-      <h1>Registered successfully</h1>
+      <h1>Logged in successfully</h1>
       <button class="btn btn-primary" @click="goHome()">
         Continue <BootstrapIcon icon="check" />
       </button>
+      <pre>{{user}}</pre>
 
     </section>
 
 
-      <div class="corner-btn" @click="goHome()"><BootstrapIcon size="3x" icon="x" /></div>
+      <!-- <div class="corner-btn" @click="goHome()"><BootstrapIcon size="3x" icon="x" /></div> -->
   </div>
 </template>
 
 <script>
-import {mapActions} from 'vuex'
+import {mapGetters, mapActions} from 'vuex'
 import BootstrapIcon from '@dvuckovic/vue3-bootstrap-icons'
 
 export default {
@@ -36,20 +36,25 @@ export default {
   },
   data() {
     return {
-      user: {},
-      registered: false,
+      loggedIn: false,
       errors: {},
     }
   },
+  computed: {
+    ...mapGetters(['user'])
+  },
+  mounted() {
+    if(this.user.name) this.loggedIn = true
+  },
   methods: {
-    ...mapActions(['register']),
+    ...mapActions(['login']),
 
-    async onRegister(){
+    async onLogin(){
       this.errors = {}
       try {
-        const res = await this.register(this.user)
+        const res = await this.login(this.user)
         console.log(res);
-        this.registered = true
+        if(res.status === 200) this.loggedIn = true
       }
       catch (err) {
         console.error(err)
