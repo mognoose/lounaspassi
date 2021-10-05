@@ -79,8 +79,6 @@ export default {
     }
   },
   mounted() {
-    console.log(this.server);
-    console.log(process.env.VUE_APP_API);
     this.getData()
     this.socket.on('PING',() => {
       console.log("GOT PINGED");
