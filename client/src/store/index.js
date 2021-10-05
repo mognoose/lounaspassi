@@ -20,6 +20,11 @@ const actions = {
    async fetchRestaurants({commit}, data){
       const restaurants = await axios.get(server+'/api/restaurants?q='+data)
       commit('setRestaurants', restaurants.data)
+   },
+   // eslint-disable-next-line
+   async register({}, data){
+      const res = await axios.post(server+'/api/users', data)
+      return res.data
    }
 }
 

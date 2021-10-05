@@ -5,10 +5,10 @@
 
     <h1>Register</h1>
       <input type="text" placeholder="username" class="form-control mb-2" v-model="user.name">
-      <input type="text" placeholder="password" class="form-control mb-2" v-model="user.password">
+      <input type="password" placeholder="password" class="form-control mb-2" v-model="user.password">
       <input type="email" placeholder="email (optional)" class="form-control mb-2" v-model="user.email">
 
-      <button class="btn btn-primary" @click="register()">
+      <button class="btn btn-primary" @click="onRegister()">
         Register <BootstrapIcon icon="pencil-square" />
       </button>
     </section>
@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import {mapActions} from 'vuex'
 import BootstrapIcon from '@dvuckovic/vue3-bootstrap-icons'
 
 export default {
@@ -36,18 +36,26 @@ export default {
   },
   data() {
     return {
-      server: 'http://192.168.1.134:3000',
       user: {},
-      registered: false
+      registered: false,
+      errors: {},
     }
   },
   methods: {
+    ...mapActions(['register']),
 
-    async register(){
-      let data = "name="+this.user.name+"&password="+this.user.password+"&email="+this.user.email+"&"
-      const res = await axios.post(this.server+'/register', data)
-      console.log(res.data)
-      if(res.data === "created") this.registered = true
+    async onRegister(){
+      this.errors = {}
+      try {
+        const res = await this.register(this.user)
+        console.log("TRY RES",res);
+        this.registered = true
+      }
+      catch (err) {
+        console.error(err)
+        this.errors = err
+      }
+
     },
     goHome(){
       this.$router.push('/')

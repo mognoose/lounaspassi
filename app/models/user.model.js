@@ -3,13 +3,17 @@ const bcrypt = require('bcrypt');
 module.exports = (sequelize, Sequelize) => {
     const User = sequelize.define("user", {
       name: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+        unique: true
       },
       email: {
         type: Sequelize.STRING
       },
       password: {
-        type: Sequelize.STRING
+        type: Sequelize.STRING,
+        allowNull: false,
+
       }
     }, {
         sequelize, // We need to pass the connection instance
