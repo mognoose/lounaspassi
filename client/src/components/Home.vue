@@ -66,8 +66,8 @@ export default {
   },
   data() {
     return {
-      server: 'http://192.168.1.135:3000',
-      socket: io('http://192.168.1.135:3000'),
+      server: process.env.VUE_APP_API,
+      socket: io(process.env.VUE_APP_API),
       user: {
         id: 1,
         name: "stna"
@@ -79,6 +79,8 @@ export default {
     }
   },
   mounted() {
+    console.log(this.server);
+    console.log(process.env.VUE_APP_API);
     this.getData()
     this.socket.on('PING',() => {
       console.log("GOT PINGED");

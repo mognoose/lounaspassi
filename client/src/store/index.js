@@ -1,6 +1,6 @@
 import { createStore } from "vuex" 
 import axios from "axios" 
-const server = 'http://192.168.1.135:3000/api'
+const server = process.env.VUE_APP_API
 
 const state = {
    stamps: {},
@@ -14,11 +14,11 @@ const getters = {
 
 const actions = {
    async fetchStamps({commit}, data){
-      const stamps = await axios.get(server+'/stamps?restaurantId='+data.restaurantId+'&userId='+data.userId)
+      const stamps = await axios.get(server+'/api/stamps?restaurantId='+data.restaurantId+'&userId='+data.userId)
       commit('setStamps', stamps.data)
    },
    async fetchRestaurants({commit}, data){
-      const restaurants = await axios.get(server+'/restaurants?q='+data)
+      const restaurants = await axios.get(server+'/api/restaurants?q='+data)
       commit('setRestaurants', restaurants.data)
    }
 }
