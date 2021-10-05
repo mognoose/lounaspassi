@@ -25,8 +25,16 @@
             </div>
           </li>
         </ul>
-      <div class="corner-btn" @click="onLogout()"><BootstrapIcon size="3x" icon="x" /></div>
-
+      <div class="corner-btn">
+      <div data-bs-toggle="dropdown" aria-expanded="false"><BootstrapIcon size="2x" icon="person-circle" /></div>
+        <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
+          <li><a class="dropdown-item disabled" href="#">Profile</a></li>
+          <li><a class="dropdown-item disabled" href="#">Favorites</a></li>
+          <li><router-link class="dropdown-item" to="/readQr/addstamp/1" href="#">Add stamp</router-link></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" @click="onLogout()" href="#">Logout</a></li>
+        </ul>
+      </div>
     </section>
     <section v-else>
       <h1>{{restaurant.name}}</h1>
@@ -126,7 +134,9 @@ export default {
     },
     generateQR(){
       const canvas = document.getElementById('canvas')
-      const url = 'http://192.168.1.134:8080/readqr/addstamp/'+this.user.id
+      console.log(this.server)
+      let domain = this.server.split(":")[1]
+      const url = 'http:'+domain+':8080/readqr/addstamp/'+this.user.id
       if(canvas){
         QRCode.toCanvas(canvas, url, error => {
           if (error) console.error(error)

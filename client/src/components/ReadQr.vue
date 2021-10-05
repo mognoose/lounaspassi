@@ -14,7 +14,7 @@
           <div class="restBtnFav"><BootstrapIcon size="2x" icon="emoji-smile" /></div>
         </div>
 
-      <pre>{{stamps}}</pre>
+      <pre>{{user}}</pre>
   </div>
 </template>
 
@@ -30,32 +30,20 @@ export default {
     BootstrapIcon,
   },
   computed: {
-    ...mapGetters(['restaurants', 'stamps']),
+    ...mapGetters(['restaurants', 'stamps', 'user']),
     userId(){
       return this.$route.params.user
     }
   },
   data() {
     return {
-      server: 'http://192.168.1.135:3000',
-      socket: io('http://192.168.1.135:3000'),
-      user: {
-        id: 666,
-        name: "stna"
-      },
-      searchString: "",
+      server: process.env.VUE_APP_API,
+      socket: io(process.env.VUE_APP_API),
       restaurantId: 2,
-      menuOpen: false,
-      icons:{
-        stamp: '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 100-2 1 1 0 000 2zm7-1a1 1 0 11-2 0 1 1 0 012 0zm-.464 5.535a1 1 0 10-1.415-1.414 3 3 0 01-4.242 0 1 1 0 00-1.415 1.414 5 5 0 007.072 0z" clip-rule="evenodd" /></svg>',
-        dots: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" /></svg>',
-        x: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>',
-        search: '<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>'
-      },
-      favourites: []
     }
   },
   mounted() {
+    if(!this.user.name) this.$router.replace("/login")
     this.getData()
     this.socket.on('PING',() => {
       console.log("GOT PINGED");
@@ -65,15 +53,14 @@ export default {
     ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants']),
     
     async getData(){
-      let userId = await this.$route.params.user
-      await this.fetchStamps({restaurantId: this.restaurantId, userId})
+      await this.fetchStamps({restaurantId: this.user.restaurantId, userId: this.userId})
     },
     goHome(){
       this.$router.push('/')
     },
 
     async addStamp(){
-      let data = {"restaurantId": this.restaurantId, "userId":this.userId}
+      let data = {"restaurantId": this.user.restaurantId, "userId":this.userId}
       const res = await axios.post(this.server+'/api/stamps/', data)
       console.log(res.data)
       this.getData()
@@ -81,7 +68,7 @@ export default {
     },
     async clearStamps(){
       // let data = "restaurantId="+this.restaurantId+"&userId="+this.userId
-      let data = {"restaurantId": this.restaurantId, "userId":this.userId}
+      let data = {"restaurantId": this.user.restaurantId, "userId":this.userId}
       const res = await axios.delete(this.server+'/api/stamps/clear', { data })
       console.log(res.data)
       this.getData()

@@ -1,5 +1,6 @@
 const db = require("../models");
 const User = db.users;
+const Restaurant = db.restaurant;
 const Op = db.Sequelize.Op;
 const bcrypt = require('bcrypt');
 
@@ -35,19 +36,19 @@ exports.create = (req, res) => {
 
 
 // Find a single User with an id
-exports.login = (req, res) => {
+exports.login = async (req, res) => {
   const name = req.query.name;
   const password = req.query.password;
   console.log("name:", name);
   console.log("pass:", password);
 
-  User.findOne({ where: { name: name } })
-    .then(user => {
+  const user = await User.findOne({ where: { name: name } })
+    .then(async user => {
       if(user){
         const pass = bcrypt.compareSync(password, user.password);
+        
         if (pass) {
-          user.password = null
-          res.send(user);
+          return user
         } else{
           res.status(403).send({
             message: `incorrect password for name=${name}.`
@@ -65,6 +66,19 @@ exports.login = (req, res) => {
         message: "Error retrieving User with name=" + name + ". ERROR: "+err
       });
     });
+
+  const restaurant = await Restaurant.findOne({ where: { userId: 1 } }).then(data => data )
+  
+  user.restaurantId = restaurant.id
+  const response = {}
+  response.id = user.id
+  response.name = user.name
+  response.email = user.email
+  response.restaurantId = restaurant.id
+  
+  res.send(response);
+
+
 };
 
 // Retrieve all Users from the database.

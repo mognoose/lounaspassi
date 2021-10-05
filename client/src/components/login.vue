@@ -16,7 +16,7 @@
       <button class="btn btn-primary" @click="goHome()">
         Continue <BootstrapIcon icon="check" />
       </button>
-      <pre>{{user}}</pre>
+      <!-- <pre>{{user}}</pre> -->
 
     </section>
 
