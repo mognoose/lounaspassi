@@ -1,4 +1,4 @@
 module.exports = {
   dialect: 'sqlite',
-  storage: 'db/lp.db'
+  storage: 'app/db/lp.db'
 };

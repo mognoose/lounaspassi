@@ -21,6 +21,8 @@ app.get('/', (req, res) => {
   res.send('Hello World!')
 })
 
+require("dotenv").config();
+
 require("./app/routes/user.routes")(app);
 require("./app/routes/restaurant.routes")(app);
 require("./app/routes/stamp.routes")(app);

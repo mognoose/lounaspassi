@@ -13,7 +13,9 @@ module.exports = (sequelize, Sequelize) => {
       password: {
         type: Sequelize.STRING,
         allowNull: false,
-
+      },
+      token: {
+        type: Sequelize.STRING,
       }
     }, {
         sequelize, // We need to pass the connection instance
@@ -45,12 +47,7 @@ module.exports = (sequelize, Sequelize) => {
             user.password = bcrypt.hashSync(user.password, salt);
            }
           }
-         },
-         instanceMethods: {
-          validPassword: (password) => {
-           return bcrypt.compareSync(password, this.password);
-          }
-        }
+         }
     });
   
     return User;

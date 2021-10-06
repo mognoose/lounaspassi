@@ -1,43 +1,65 @@
 import { createStore } from "vuex" 
 import axios from "axios" 
+import VueJwtDecode from 'vue-jwt-decode'
+
 const server = process.env.VUE_APP_API
 
 const state = {
-   stamps: {},
-   restaurants: {},
-   user: {}
+  stamps: {},
+  restaurants: {},
+  user: {}
 }
 
 const getters = {
-   stamps: state => state.stamps,
-   restaurants: state => state.restaurants,
-   user: state => state.user
+  stamps: state => state.stamps,
+  restaurants: state => state.restaurants,
+  user: state => state.user
 }
 
 const actions = {
-   async fetchStamps({commit}, data){
-      const stamps = await axios.get(server+'/api/stamps?restaurantId='+data.restaurantId+'&userId='+data.userId)
-      commit('setStamps', stamps.data)
-   },
-   async fetchRestaurants({commit}, data){
-      const restaurants = await axios.get(server+'/api/restaurants?q='+data)
-      commit('setRestaurants', restaurants.data)
-   },
-   // eslint-disable-next-line
-   async register({}, data){
-      const res = await axios.post(server+'/api/users', data)
-      return res.data
-   },
-   async login({commit}, data){
-      const res = await axios.get(server+'/api/users/login', { params: data })
-      console.log("VUEX",res.data);
-      commit('setUser', res.data)
-      return res
-   },
-   async logout({commit}){
+  async fetchStamps({commit}, params){
+    const url = server+'/api/stamps'
+    const headers = {'x-access-token': localStorage.getItem("token")}
+    const stamps = await axios.get(url, {params, headers})
+    commit('setStamps', stamps.data)
+  },
+  async fetchRestaurants({commit}, data){
+    const restaurants = await axios.get(server+'/api/restaurants?', { params: {q: data}})
+    commit('setRestaurants', restaurants.data)
+  },
+  // eslint-disable-next-line
+  async register({}, data){
+    const res = await axios.post(server+'/api/users', data)
+    return res.data
+  },
+  async login({commit}, data){
+  const res = await axios.get(server+'/api/users/login', { params: data })
+  localStorage.setItem("user", JSON.stringify(res.data));
+
+  console.log("VUEX",res.data);
+  commit('setUser', res.data)
+  return res
+  },
+  async checkLogin({commit}){
+    let token = localStorage.getItem("token");
+    try {
+      //decode token here and attach to the user object
+      VueJwtDecode.decode(token);
+      const user = JSON.parse(localStorage.getItem("user"))
+      commit('setUser', user)
+      return true
+    } catch (error) {
+      // return error in production env
       commit('logout')
-      return "logged out"
-   }
+      return false
+    }
+  },
+  async logout({commit}){
+    localStorage.removeItem("token")
+    localStorage.removeItem("user")
+    commit('logout')
+    return "session terminated"
+  }
 }
 
 const mutations = {
@@ -51,6 +73,7 @@ const mutations = {
       state.user = data
    },
    logout(state){
+     console.log("USERDATA DELETED")
       state.user = {}
    }
 }

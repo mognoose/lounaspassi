@@ -61,6 +61,7 @@ import QRCode from 'qrcode'
 import BootstrapIcon from '@dvuckovic/vue3-bootstrap-icons'
 import {mapGetters, mapActions} from 'vuex'
 import io from 'socket.io-client'
+// import VueJwtDecode from 'vue-jwt-decode'
 
 export default {
   name: 'App',
@@ -80,12 +81,15 @@ export default {
       searchString: "",
       restaurant: {},
       menuOpen: false,
-      favourites: []
+      favourites: [],
+      login: {}
     }
   },
   mounted() {
-    if(!this.user.name) this.$router.replace('/login')
-
+    this.checkLogin().then(loggedIn => {
+      if(loggedIn) console.log(loggedIn)
+      else this.$router.push("/login")
+    })
     this.getData()
     this.socket.on('PING',() => {
       console.log("GOT PINGED");
@@ -93,7 +97,7 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants', 'logout']),
+    ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants', 'checkLogin', 'logout']),
 
     onAddFavourites(r){
       this.favourites.push(r);
@@ -128,9 +132,9 @@ export default {
     goHome(){
       this.$router.push('/')
     },
-    onLogout(){
-      this.logout()
-      this.$router.push('/login')
+    async onLogout(){
+      await this.logout()
+      this.$router.push("/login");
     },
     generateQR(){
       const canvas = document.getElementById('canvas')

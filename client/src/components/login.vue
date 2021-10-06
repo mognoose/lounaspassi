@@ -16,7 +16,7 @@
       <button class="btn btn-primary" @click="goHome()">
         Continue <BootstrapIcon icon="check" />
       </button>
-      <!-- <pre>{{user}}</pre> -->
+      <pre>{{user}}</pre>
 
     </section>
 
@@ -28,6 +28,7 @@
 <script>
 import {mapGetters, mapActions} from 'vuex'
 import BootstrapIcon from '@dvuckovic/vue3-bootstrap-icons'
+// import VueJwtDecode from 'vue-jwt-decode'
 
 export default {
   name: 'App',
@@ -53,8 +54,10 @@ export default {
       this.errors = {}
       try {
         const res = await this.login(this.user)
-        console.log(res);
+        const token = res.data.token
+        localStorage.setItem("token", token);
         if(res.status === 200) this.loggedIn = true
+        this.$router.push('/')
       }
       catch (err) {
         console.error(err)

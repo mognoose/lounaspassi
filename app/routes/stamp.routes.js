@@ -1,13 +1,13 @@
 module.exports = app => {
-    const stamps = require("../controllers/stamp.controller.js");
-  
+    const stamps = require("../controllers/stamp.controller.js")
+    const auth = require("../middleware/auth")  
     var router = require("express").Router();
   
     // Create a new Stamp
-    router.post("/", stamps.create);
+    router.post("/", auth, stamps.create);
   
     // Retrieve all Tutorials
-    router.get("/", stamps.findAll);
+    router.get("/", auth, stamps.findAll);
   
     // Retrieve a single Stamp with id
     // router.get("/:id", stamps.findOne);
@@ -16,10 +16,10 @@ module.exports = app => {
     // router.put("/:id", stamps.update);
     
     // Delete a Stamp with id
-    router.delete("/clear", stamps.clear);
+    router.delete("/clear", auth, stamps.clear);
     
     // Delete a Stamp with id
-    router.delete("/:id", stamps.delete);
+    router.delete("/:id", auth, stamps.delete);
     
     // Delete all Stamps
     // router.delete("/", stamps.deleteAll);

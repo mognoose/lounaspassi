@@ -3,9 +3,12 @@ const User = db.users;
 const Restaurant = db.restaurant;
 const Op = db.Sequelize.Op;
 const bcrypt = require('bcrypt');
+const jwt = require("jsonwebtoken");
 
 // Create and Save a new User
-exports.create = (req, res) => {
+exports.create = async (req, res) => {
+  try {
+    
     // Validate request
     if (!req.body.name) {
       res.status(422).send({
@@ -15,70 +18,64 @@ exports.create = (req, res) => {
     }
   
     // Create a User
-    const user = {
+    const userData = {
       name: req.body.name,
       email: req.body.email,
       password: req.body.password
     };
   
     // Save User in the database
-    User.create(user)
-      .then(data => {
-        res.send(data);
-      })
-      .catch(err => {
-        res.status(500).send({
-          message:
-            err.message || "Some error occurred while creating the User."
-        });
-      });
-  };
+    const user = User.create(userData)
+
+    // Create token
+    const token = jwt.sign(
+      { user_id: user._id, name: userData.name },
+      process.env.TOKEN_KEY,
+      {
+        expiresIn: "2h",
+      }
+    );
+    // save user token
+    user.token = token;
+
+    res.send(user);
+  } catch (error) {
+    console.log(error);
+  }
+
+};
 
 
 // Find a single User with an id
 exports.login = async (req, res) => {
-  const name = req.query.name;
-  const password = req.query.password;
-  console.log("name:", name);
-  console.log("pass:", password);
+  try {
+    
+    const name = req.query.name;
+    const password = req.query.password;
 
-  const user = await User.findOne({ where: { name: name } })
-    .then(async user => {
-      if(user){
-        const pass = bcrypt.compareSync(password, user.password);
-        
-        if (pass) {
-          return user
-        } else{
-          res.status(403).send({
-            message: `incorrect password for name=${name}.`
-          });
+    const user = await User.findOne({ where: { name: name } })
+    if (user && (await bcrypt.compare(password, user.password))) {
+      // Create token
+      const token = jwt.sign(
+        { user_id: user._id, name: user._name },
+        process.env.TOKEN_KEY,
+        {
+          expiresIn: "2h",
         }
-      }
-      else {
-        res.status(404).send({
-          message: `Cannot find User with name=${name}.`
-        });
-      }
-    })
-    .catch(err => {
-      res.status(500).send({
-        message: "Error retrieving User with name=" + name + ". ERROR: "+err
-      });
-    });
+      );
 
-  const restaurant = await Restaurant.findOne({ where: { userId: 1 } }).then(data => data )
-  
-  user.restaurantId = restaurant.id
-  const response = {}
-  response.id = user.id
-  response.name = user.name
-  response.email = user.email
-  response.restaurantId = restaurant.id
-  
-  res.send(response);
+      // save user token
+      user.token = token;
+      
+      const restaurant = await Restaurant.findOne({ where: { userId: user.id } })
+      user.dataValues.restaurantId = restaurant.id
+      
+      res.send(user);
+    }
 
-
+  } catch (error) {
+    console.error(error);    
+  }
 };
 
 // Retrieve all Users from the database.

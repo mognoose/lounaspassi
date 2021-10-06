@@ -15,6 +15,8 @@
         </div>
 
       <pre>{{user}}</pre>
+      <div class="corner-btn" @click="goHome()"><BootstrapIcon size="3x" icon="x" /></div>
+
   </div>
 </template>
 
@@ -39,18 +41,20 @@ export default {
     return {
       server: process.env.VUE_APP_API,
       socket: io(process.env.VUE_APP_API),
-      restaurantId: 2,
     }
   },
   mounted() {
-    if(!this.user.name) this.$router.replace("/login")
+    this.checkLogin().then(loggedIn => {
+      if(loggedIn) console.log(loggedIn)
+      else this.$router.push("/login")
+    })
     this.getData()
     this.socket.on('PING',() => {
       console.log("GOT PINGED");
     })
   },
   methods: {
-    ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants']),
+    ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants', 'checkLogin']),
     
     async getData(){
       await this.fetchStamps({restaurantId: this.user.restaurantId, userId: this.userId})
@@ -60,8 +64,12 @@ export default {
     },
 
     async addStamp(){
-      let data = {"restaurantId": this.user.restaurantId, "userId":this.userId}
-      const res = await axios.post(this.server+'/api/stamps/', data)
+      const url = this.server+'/api/stamps'
+      const data = {"restaurantId": this.user.restaurantId, "userId":this.userId}
+      const headers = {'x-access-token': localStorage.getItem("token")}
+      const res = await axios.post(url, data, {headers})
+
+      // const res = await axios.post(this.server+'/api/stamps/', data)
       console.log(res.data)
       this.getData()
       this.socket.emit('STAMPED')
