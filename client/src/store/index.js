@@ -44,7 +44,12 @@ const actions = {
     let token = localStorage.getItem("token");
     try {
       //decode token here and attach to the user object
-      VueJwtDecode.decode(token);
+      const now = (Math.floor(Date.now() / 1000))
+      const res = await VueJwtDecode.decode(token);
+      if(res.exp < now) {
+        this.$router.push("/login")
+        commit('logout')
+      }
       const user = JSON.parse(localStorage.getItem("user"))
       commit('setUser', user)
       return true

@@ -55,6 +55,7 @@ import axios from 'axios'
 import BootstrapIcon from '@dvuckovic/vue3-bootstrap-icons'
 import {mapGetters, mapActions} from 'vuex'
 import io from 'socket.io-client'
+import { DateTime } from "luxon";
 
 export default {
   name: 'App',
@@ -75,7 +76,7 @@ export default {
   },
   mounted() {
     this.checkLogin().then(loggedIn => {
-      if(loggedIn) console.log(loggedIn)
+      if(loggedIn) console.log("LOGGED IN:", loggedIn)
       else this.$router.push("/login")
     })
     this.getData()
@@ -114,9 +115,9 @@ export default {
       this.socket.emit('STAMPED')
     },
     formatDate(date){
-      // const formatted = DateTime.fromISO(date)
+      return DateTime.fromISO(date).toFormat('cccc d.M.yyyy H:mm')
       // console.log(formatted);
-      return date
+      // return date
     }
 
   },
