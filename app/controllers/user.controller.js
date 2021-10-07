@@ -68,7 +68,7 @@ exports.login = async (req, res) => {
       user.token = token;
       
       const restaurant = await Restaurant.findOne({ where: { userId: user.id } })
-      user.dataValues.restaurantId = restaurant.id
+      if(restaurant) user.dataValues.restaurantId = restaurant.id
       
       res.send(user);
     }
