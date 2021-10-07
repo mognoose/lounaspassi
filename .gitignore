@@ -3,4 +3,4 @@ client/node_modules
 package-lock.json
 client/package-lock.json
 client/.env
-app/db/lp.db
+app/db/
