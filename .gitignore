@@ -1,6 +1,6 @@
 node_modules/
 client/node_modules
-db/lp.db
 package-lock.json
 client/package-lock.json
 client/.env
+app/db/lp.db
