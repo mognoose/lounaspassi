@@ -2,19 +2,49 @@
   <div class="container">
     <div class="bg-overlay" />
       <BootstrapIcon size="5x" icon="upc-scan" />
-      <h1>{{stamps.length}}/10</h1>
+      <div class="info">
+        <h1>{{stamps.length}}/10</h1>
+      </div>
+      <hr>
 
-        <div class="d-flex full-width-btn justify-content-between" @click="addStamp()">
-          <div class="restBtnName">{{'Add Stamp'}}</div>
-          <div class="restBtnFav"><BootstrapIcon size="2x" icon="emoji-smile-fill" /></div>
-        </div>
-        <hr>
-        <div class="d-flex full-width-btn justify-content-between" @click="clearStamps()">
-          <div class="restBtnName">Clear Card</div>
-          <div class="restBtnFav"><BootstrapIcon size="2x" icon="emoji-smile" /></div>
-        </div>
+      <div class="mt-4 d-flex full-width-btn justify-content-between" @click="addStamp()">
+        <div class="restBtnName">{{'Add Stamp'}}</div>
+        <div class="restBtnFav"><BootstrapIcon size="2x" icon="emoji-smile-fill" /></div>
+      </div>
+      <div class="mt-4 d-flex full-width-btn justify-content-between" @click="clearStamps()">
+        <div class="restBtnName">Clear Card</div>
+        <div class="restBtnFav"><BootstrapIcon size="2x" icon="emoji-smile" /></div>
+      </div>
 
-      <pre>{{user}}</pre>
+      <hr>
+
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="headingThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Info
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
+            <div class="accordion-body">
+              <table class="table" v-if="stamps && stamps.length > 0">
+                <thead>
+                  <th>Id</th>
+                  <th>Date</th>
+                </thead>
+                <tbody>
+                  <tr v-for="stamp in stamps" :key="stamp.id">
+                    <td>{{stamp.id}}</td>
+                    <td>{{formatDate(stamp.createdAt)}}</td>
+                  </tr>
+                </tbody>
+              </table>
+              <pre>{{user}}</pre>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="corner-btn" @click="goHome()"><BootstrapIcon size="3x" icon="x" /></div>
 
   </div>
@@ -77,11 +107,17 @@ export default {
     async clearStamps(){
       // let data = "restaurantId="+this.restaurantId+"&userId="+this.userId
       let data = {"restaurantId": this.user.restaurantId, "userId":this.userId}
-      const res = await axios.delete(this.server+'/api/stamps/clear', { data })
+      const headers = {'x-access-token': localStorage.getItem("token")}
+      const res = await axios.delete(this.server+'/api/stamps/clear', { data, headers })
       console.log(res.data)
       this.getData()
       this.socket.emit('STAMPED')
     },
+    formatDate(date){
+      // const formatted = DateTime.fromISO(date)
+      // console.log(formatted);
+      return date
+    }
 
   },
 }
@@ -137,14 +173,14 @@ body{
 a.nav-link{
   display: inline-block;
   color: #FFFFFF;
-  background-color: hsla(0, 0%, 0%, 0.3);
+  background-color: hsla(0, 0%, 0%, 0.6);
   margin: .5rem;
   font-size: 2em;
 }
 .full-width-btn{
   display: inline-block;
   color: #FFFFFF;
-  background-color: hsla(0, 0%, 0%, 0.5);
+  background-color: hsla(0, 0%, 0%, 0.6);
   margin: .2rem;
   padding: .5em;
 }
@@ -156,5 +192,25 @@ a.nav-link{
 .restBtnFav{
   padding-top: .4rem;
   width: 2rem;
+}
+
+.info{
+  border: 1px solid black;
+  display: block;
+  color: #FFFFFF;
+  background-color: hsla(0, 0%, 0%, 0.4);
+  margin: .2rem;
+  padding: .5em;
+}
+h1{
+  padding:0px;
+  margin: 0px !important;
+}
+
+
+
+pre{
+  /* color: rgba(255,255,255,.6) */
+  color: hsla(0, 0%, 50%, 1)
 }
 </style>

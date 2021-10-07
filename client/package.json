@@ -11,6 +11,7 @@
     "@dvuckovic/vue3-bootstrap-icons": "^1.0.4",
     "@popperjs/core": "^2.10.2",
     "axios": "^0.21.4",
+    "bootswatch": "^5.1.2",
     "core-js": "^3.6.5",
     "qrcode": "^1.4.4",
     "socket.io-client": "^4.2.0",
@@ -20,13 +21,15 @@
     "vuex": "^4.0.2"
   },
   "devDependencies": {
+    "@types/luxon": "^2.0.4",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0"
+    "eslint-plugin-vue": "^7.0.0",
+    "luxon": "^2.0.2"
   },
   "eslintConfig": {
     "root": true,
