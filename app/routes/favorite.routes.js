@@ -1,5 +1,5 @@
 module.exports = app => {
-    const favorite = require("../controllers/stamp.controller.js");
+    const favorite = require("../controllers/favorite.controller.js");
   
     var router = require("express").Router();
   
@@ -16,10 +16,10 @@ module.exports = app => {
     // router.put("/:id", favorite.update);
     
     // Delete a Favorite with id
-    router.delete("/:id", favorite.delete);
+    // router.delete("/:id", favorite.delete);
     
     // Delete a Favorite with id
-    router.delete("/:id", favorite.clear);
+    // router.delete("/:id", favorite.clear);
     
     // Delete all favorite
     // router.delete("/", favorite.deleteAll);

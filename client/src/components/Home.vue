@@ -61,7 +61,6 @@ import QRCode from 'qrcode'
 import BootstrapIcon from '@dvuckovic/vue3-bootstrap-icons'
 import {mapGetters, mapActions} from 'vuex'
 import io from 'socket.io-client'
-// import VueJwtDecode from 'vue-jwt-decode'
 
 export default {
   name: 'App',
@@ -69,10 +68,10 @@ export default {
     BootstrapIcon,
   },
   computed: {
-    ...mapGetters(['restaurants', 'stamps', 'user']),
+    ...mapGetters(['restaurants', 'stamps', 'user', 'favorites']),
     restaurantId(){
       return this.$route.params.restaurantId
-    }
+    },
   },
   data() {
     return {
@@ -87,8 +86,8 @@ export default {
   },
   mounted() {
     this.checkLogin().then(loggedIn => {
-      if(loggedIn) console.log(loggedIn)
-      else this.$router.push("/login")
+      if(!loggedIn) this.$router.push("/login")
+      // else console.log(loggedIn)
     })
     this.getData()
     this.socket.on('PING',() => {
@@ -97,9 +96,21 @@ export default {
     })
   },
   methods: {
-    ...mapActions(['addToCount', 'fetchStamps', 'fetchRestaurants', 'checkLogin', 'logout']),
+    ...mapActions([
+      'addToCount',
+      'fetchStamps',
+      'fetchRestaurants',
+      'fetchFavorites',
+      'removeFavorite',
+      'checkLogin',
+      'logout',
+      ]),
 
-    onAddFavourites(r){
+    async onAddFavourites(r){
+      console.log(r);
+      console.log(this.user);
+      // await axios.post(this.server+'/api/favorite', {user_id: this.user.id, restaurant_id: r.id})
+
       this.favourites.push(r);
     },
     onRemoveFavourites(r){
@@ -107,11 +118,13 @@ export default {
     },
     
     async getData(){
+      if(this.user.id) await this.fetchFavorites(this.user.id)
       if(this.restaurantId){
-        console.log("USER",this.user);
         this.generateQR()
-        await this.getRestaurant()
-        await this.fetchStamps({restaurantId: this.restaurantId, userId: this.user.id})
+        await Promise.all([
+          this.getRestaurant(),
+          this.fetchStamps({restaurantId: this.restaurantId, userId: this.user.id}),
+        ])
 
       }
     },

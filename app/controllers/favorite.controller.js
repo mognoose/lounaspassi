@@ -1,17 +1,18 @@
 const db = require("../models");
 const Favorite = db.favorite;
+const Restaurant = db.restaurant;
 const Op = db.Sequelize.Op;
 
 // Create and Save a new Favorite
 exports.create = (req, res) => {
     // Validate request
-    if (!req.body.userId) {
+    if (!req.body.user_id) {
       res.status(422).send({
         message: "Content can not be empty!"
       });
       return;
     }
-    if (!req.body.restaurantId) {
+    if (!req.body.restaurant_id) {
       res.status(422).send({
         message: "Content can not be empty!"
       });
@@ -20,8 +21,8 @@ exports.create = (req, res) => {
   
     // Create a favorite
     const favorite = {
-      userId: req.body.userId,
-      restaurantId: req.body.restaurantId,
+      userId: req.body.user_id,
+      restaurantId: req.body.restaurant_id,
     };
   
     // Save favorite in the database
@@ -41,11 +42,23 @@ exports.create = (req, res) => {
 exports.findAll = (req, res) => {
     const restaurantId = req.query.restaurantId;
     const userId = req.query.userId;
-    let conditions = {where:{}}
+    let conditions = {where:{}, include: []}
     if(restaurantId) conditions.where.restaurantId = parseInt(restaurantId)
     if(userId) conditions.where.userId = parseInt(userId)
+    // conditions.include = [{
+    //   model: Favorite,
+    //   // where: ["restaurant.id = favorite.id"]
+    // }]
 
     Favorite.findAll(conditions).then(data => {
+        // TODO: Fetch restaurant data too
+        // data.restaurants = data.forEach(favorite => {
+        //   console.log("DATA:", favorite.restaurantId);
+        //   const restaurant = Restaurant.findByPk(favorite.restaurantId, res).then(data => {
+        //     return data
+        //   })
+        //   return restaurant
+        // });
         res.send(data);
       })
       .catch(err => {

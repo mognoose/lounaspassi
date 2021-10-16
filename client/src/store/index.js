@@ -7,12 +7,14 @@ const server = process.env.VUE_APP_API
 const state = {
   stamps: {},
   restaurants: {},
+  favorites: {},
   user: {}
 }
 
 const getters = {
   stamps: state => state.stamps,
   restaurants: state => state.restaurants,
+  favorites: state => state.favorites,
   user: state => state.user
 }
 
@@ -27,6 +29,14 @@ const actions = {
     const restaurants = await axios.get(server+'/api/restaurants?', { params: {q: data}})
     commit('setRestaurants', restaurants.data)
   },
+  async fetchFavorites({commit}, data){
+    const url = server+'/api/favorite'
+    const headers = {'x-access-token': localStorage.getItem("token")}
+    const params = {userId: data.userId}
+    const favorites = await axios.get(url, {params, headers})
+    commit('setFavorites', favorites.data)
+  },
+
   // eslint-disable-next-line
   async register({}, data){
     const res = await axios.post(server+'/api/users', data)
@@ -36,7 +46,6 @@ const actions = {
   const res = await axios.get(server+'/api/users/login', { params: data })
   localStorage.setItem("user", JSON.stringify(res.data));
 
-  console.log("VUEX",res.data);
   commit('setUser', res.data)
   return res
   },
@@ -73,6 +82,9 @@ const mutations = {
    },
    setRestaurants(state, restaurants){
       state.restaurants = restaurants
+   },
+   setFavorites(state, favorites){
+      state.favorites = favorites
    },
    setUser(state, data){
       state.user = data
