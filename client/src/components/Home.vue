@@ -30,6 +30,8 @@
         <ul class="dropdown-menu dropdown-menu-dark" aria-labelledby="dropdownMenuButton2">
           <li><a class="dropdown-item disabled" href="#">Profile</a></li>
           <li><a class="dropdown-item disabled" href="#">Favorites</a></li>
+          <li v-if="ownRestaurant.id"><router-link class="dropdown-item" to="/restaurant/edit/1" href="#">Edit restaurant</router-link></li>
+          <li v-else><router-link class="dropdown-item" to="/restaurant/create" href="#">Add restaurant</router-link></li>
           <li><router-link class="dropdown-item" to="/readQr/addstamp/1" href="#">Add stamp</router-link></li>
           <li><hr class="dropdown-divider"></li>
           <li><a class="dropdown-item" @click="onLogout()" href="#">Logout</a></li>
@@ -68,7 +70,7 @@ export default {
     BootstrapIcon,
   },
   computed: {
-    ...mapGetters(['restaurants', 'stamps', 'user', 'favorites']),
+    ...mapGetters(['restaurants', 'stamps', 'user', 'favorites', 'ownRestaurant']),
     restaurantId(){
       return this.$route.params.restaurantId
     },
@@ -100,6 +102,7 @@ export default {
       'addToCount',
       'fetchStamps',
       'fetchRestaurants',
+      'fetchOwnRestaurant',
       'fetchFavorites',
       'removeFavorite',
       'checkLogin',
@@ -118,7 +121,12 @@ export default {
     },
     
     async getData(){
-      if(this.user.id) await this.fetchFavorites(this.user.id)
+      if(this.user.id){
+        await Promise.all([
+          this.fetchFavorites(this.user.id),
+          this.fetchOwnRestaurant(this.user.id)
+        ])
+        }
       if(this.restaurantId){
         this.generateQR()
         await Promise.all([
