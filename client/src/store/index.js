@@ -7,6 +7,7 @@ const server = process.env.VUE_APP_API
 const state = {
   stamps: {},
   restaurants: {},
+  ownRestaurant: {},
   favorites: {},
   user: {}
 }
@@ -14,6 +15,7 @@ const state = {
 const getters = {
   stamps: state => state.stamps,
   restaurants: state => state.restaurants,
+  ownRestaurant: state => state.ownRestaurant,
   favorites: state => state.favorites,
   user: state => state.user
 }
@@ -28,6 +30,10 @@ const actions = {
   async fetchRestaurants({commit}, data){
     const restaurants = await axios.get(server+'/api/restaurants?', { params: {q: data}})
     commit('setRestaurants', restaurants.data)
+  },
+  async fetchOwnRestaurant({commit}, data){
+    const ownRestaurant = await axios.get(server+'/api/restaurants/owner/'+data)
+    commit('setOwnRestaurant', ownRestaurant.data)
   },
   async fetchFavorites({commit}, data){
     const url = server+'/api/favorite'
@@ -82,6 +88,9 @@ const mutations = {
    },
    setRestaurants(state, restaurants){
       state.restaurants = restaurants
+   },
+   setOwnRestaurant(state, ownRestaurant){
+      state.ownRestaurant = ownRestaurant
    },
    setFavorites(state, favorites){
       state.favorites = favorites
