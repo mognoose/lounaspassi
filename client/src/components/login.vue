@@ -4,12 +4,15 @@
     <section v-if="!loggedIn">
 
     <h1>Login</h1>
-      <input type="text" placeholder="username" class="form-control mb-2" v-model="user.name">
-      <input type="password" placeholder="password" class="form-control mb-2" v-model="user.password">
-      <button class="btn btn-primary" @click="onLogin()">
-        Login <BootstrapIcon icon="pencil-square" />
-      </button><hr>
-      <router-link to="/register"><button class="shadow btn btn-secondary btn-sm">Register</button></router-link>
+      <form @submit.prevent="onLogin()">
+        <input type="text" placeholder="username" class="form-control mb-2" v-model="user.name" autofocus>
+        <input type="password" placeholder="password" class="form-control mb-2" v-model="user.password">
+        <button class="btn btn-primary" @click="onLogin()">
+          Login
+        </button>
+      </form>
+      <hr>
+      <router-link to="/register"><button class="shadow btn btn-secondary btn-sm">Register <BootstrapIcon icon="pencil-square" /></button></router-link>
     </section>
     <section v-else>
       <h1>Logged in successfully</h1>

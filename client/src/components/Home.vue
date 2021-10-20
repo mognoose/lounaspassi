@@ -2,12 +2,14 @@
   <div class="container">
     <div class="bg-overlay" />
     <section v-if="!restaurantId">
-      <div class="input-group">
-          <input type="text" class="form-control" v-model="searchString">
+      <form @submit.prevent="fetchRestaurants(searchString)">
+        <div class="input-group">
+          <input type="text" class="form-control" v-model="searchString" autofocus>
           <button class="btn btn-primary" @click="fetchRestaurants(searchString)">
             <BootstrapIcon icon="search" />
           </button>
-      </div>
+        </div>
+      </form>
         <ul class="nav flex-column mt-4">
           <li class="nav-item" v-for="r in favourites" :key="r.id">
             <div class="d-flex full-width-btn justify-content-between">

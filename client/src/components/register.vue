@@ -4,13 +4,14 @@
     <section v-if="!registered">
 
     <h1>Register</h1>
-      <input type="text" placeholder="username" class="form-control mb-2" v-model="user.name">
-      <input type="password" placeholder="password" class="form-control mb-2" v-model="user.password">
-      <input type="email" placeholder="email (optional)" class="form-control mb-2" v-model="user.email">
-
-      <button class="btn btn-primary" @click="onRegister()">
-        Register <BootstrapIcon icon="pencil-square" />
-      </button>
+      <form @submit.prevent="onRegister()">
+        <input type="text" placeholder="username" class="form-control mb-2" v-model="user.name" autofocus>
+        <input type="password" placeholder="password" class="form-control mb-2" v-model="user.password">
+        <input type="email" placeholder="email (optional)" class="form-control mb-2" v-model="user.email">
+        <button class="btn btn-primary" @click="onRegister()">
+          Register <BootstrapIcon icon="pencil-square" />
+        </button>
+      </form>
     </section>
     <section v-else>
       <h1>Registered successfully</h1>
